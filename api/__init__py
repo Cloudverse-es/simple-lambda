@@ -1,0 +1,40 @@
+from flask import (
+    Flask,
+    jsonify,
+)
+
+from typing import List 
+
+import json
+import boto3
+from pydantic import BaseModel, Extra
+
+
+
+res = boto3.resource('dynamodb')
+users_table = res.Table('users')
+
+
+def create_app():
+    app = Flask(__name__)
+    
+    
+    @app.route('/')
+    def index():
+        scan_ = users_table.scan()
+        print(scan_)
+        
+        return jsonify(status=200, message='Hello Flask!')
+    
+    return app
+
+
+
+class User(BaseModel):
+    class Config:
+        extra = Extra.allow
+        
+    id: int
+    name: str
+    surname: str
+    extra1: List[str]
